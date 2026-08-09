@@ -1,0 +1,16 @@
+{
+  "name": "vibe-protocol",
+  "version": "1.0.0",
+  "description": "16-dimensional room descriptors with TypeScript, Python, and Rust types",
+  "type": "module",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "scripts": {
+    "build": "tsc",
+    "test": "vitest run",
+    "test:watch": "vitest"
+  },
+  "keywords": ["vibe", "protocol", "mud", "grand-pattern", "crdt"],
+  "author": "SuperInstance",
+  "license": "MIT"
+}
