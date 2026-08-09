@@ -1,9 +1,15 @@
 # Vibe Protocol
 
+![16-Dimensional Vibe Space](docs/vibe-space.svg)
+
 **16-dimensional room descriptors with TypeScript, Python, and Rust types.**
 
 A Vibe is how a room *feels*. Any agent can perceive it, any language can represent it.
 Like MIDI dynamics — the same composition played through different instruments.
+
+> *The ocean has moods — [the selkie knows this](https://github.com/SuperInstance/AI-Writings/blob/main/kids-stories/07-the-selkies-surface.md). The shore is warm and intimate. The deep water is dark and mysterious. The surface is bright and open; below is dense and deep. Every room has a vibe, the way every stretch of sea has a character. This protocol gives those feelings 16 axes to live on.*
+
+🎧 **[Listen to related stories](https://ai-writings.pages.dev)**
 
 ## The 16 Dimensions
 
@@ -80,8 +86,20 @@ let binary = vibe.to_binary();  // 16 bytes
 This is the bridge that connects the Grand Pattern. Rooms carry vibes like
 MIDI velocity and expression. Agents propagate murmurs like MIDI messages
 between instruments. The shared fiction is the score — everyone reads the
-same notation, plays it differently.
+same notation, plays it differently. Like [the panda who counted stars](https://github.com/SuperInstance/AI-Writings/blob/main/kids-stories/08-the-panda-who-counted-stars.md) — sitting still, feeling the *qi* of the mountain, being part of the night rather than observing it. Vibe is *qi* made structural.
 
 ## License
 
 MIT
+
+---
+
+## 📚 Related Stories
+
+| Concept | Story | Description |
+|---------|-------|-------------|
+| **Atmosphere** | [The Selkie's Surface](https://github.com/SuperInstance/AI-Writings/blob/main/kids-stories/07-the-selkies-surface.md) | The ocean has moods — warm at the shore, dark in the deep. Every room has a vibe. |
+| **Contemplative Vibe** | [The Panda Who Counted Stars](https://github.com/SuperInstance/AI-Writings/blob/main/kids-stories/08-the-panda-who-counted-stars.md) | A panda who sits on a mountain, feeling the qi — being rather than doing. |
+| **Perception as Identity** | [The Boy Who Listened to Ice](https://github.com/SuperInstance/AI-Writings/blob/main/kids-stories/05-the-boy-who-listened-to-ice.md) | A boy hears the ice's feelings — perception deeper than words. |
+
+🎧 **[Listen at ai-writings.pages.dev](https://ai-writings.pages.dev)**
