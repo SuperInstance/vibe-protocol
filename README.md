@@ -94,6 +94,40 @@ MIT
 
 ---
 
+## In the Fleet
+
+Vibe Protocol is the emotional substrate of the [SuperInstance](https://github.com/SuperInstance) fleet. It connects to:
+
+- 🏠 **[mud-engine](https://github.com/SuperInstance/mud-engine)** — Rooms have vibes. The MUD engine is where rooms live.
+- 🚢 **[vessel-agent-system](https://github.com/SuperInstance/vessel-agent-system)** — The boat's rooms vibe. Engine room = dense, tense, rhythmic. Wheelhouse = clear, ordered, compelling.
+- 🧭 **[cns-bridge](https://github.com/SuperInstance/cns-bridge)** — Vibes become packets. The CNS bus carries vibe signals between agents.
+- 🎵 **[roblox-beatclock](https://github.com/SuperInstance/roblox-beatclock)** — Rhythm dimension. BeatClock provides the temporal grid that the rhythm dimension measures.
+- 🤝 **[roblox-bond-system](https://github.com/SuperInstance/roblox-bond-system)** — Bond tier changes shift vibes. A tier-up propagates warmth.
+- 🌊 **[vessel-room-navigator](https://github.com/SuperInstance/vessel-room-navigator)** — The boat IS rooms. Each room carries a vibe.
+- 📡 **[fleet-envelope](https://github.com/SuperInstance/fleet-envelope)** — Event grammar. Vibes are events.
+- 📻 **[fleet-radio](https://github.com/SuperInstance/fleet-radio)** — Fleet-wide vibe broadcast.
+- ✍️ **[AI-Writings](https://github.com/SuperInstance/AI-Writings/tree/main/prose)** — The fleet writes about vibes, feelings, and the selkie who knows the ocean's moods.
+
+### The CNS Bus Thread
+
+Vibe Protocol is part of the CNS Bus pattern — the fleet's nervous system. Vibes flow through the CNS bus between agents like neurotransmitters across synapses. The CRDT merge ensures convergence: no matter the order of messages, the fleet reaches the same emotional state.
+
+---
+
+## Where to Next
+
+- **If you need rooms:** → [mud-engine](https://github.com/SuperInstance/mud-engine) — THE room engine
+- **If you need the boat:** → [vessel-agent-system](https://github.com/SuperInstance/vessel-agent-system) — AELMA
+- **If you need timing:** → [roblox-beatclock](https://github.com/SuperInstance/roblox-beatclock) — BPM-accurate clock
+- **If you need bonds:** → [roblox-bond-system](https://github.com/SuperInstance/roblox-bond-system) — NPC relationships
+- **If you need the dark mirror:** → [zeroclaw](https://github.com/SuperInstance/zeroclaw) — when vibes go wrong
+
+---
+
+*Built as part of the [SuperInstance](https://github.com/SuperInstance) fleet — where every room has a mood and every mood is 16 bytes.*
+
+---
+
 ## 📚 Related Stories
 
 | Concept | Story | Description |
