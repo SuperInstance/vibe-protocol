@@ -68,18 +68,28 @@ let binary = vibe.to_binary();  // 16 bytes
 
 ## Features
 
-- **computeVibe** — derive vibe from room properties + world state
-- **compareVibes** — cosine similarity between vibes
-- **vibeDistance** — Euclidean distance
-- **vibeToText** — evocative natural language rendering
-- **textToVibe** — parse text descriptions into vibes
-- **mergeVibes** — weighted average for room transitions
-- **propagateVibes** — gossip protocol: vibes flow through room adjacency
-- **mergeVibeMaps** — CRDT merge: distributed agents converge
+- **[computeVibe](src/index.ts)** — derive vibe from room properties + world state
+- **[compareVibes](src/index.ts)** — cosine similarity between vibes. *Two quiet rooms can be identical in vibe to two roaring ones — we measure the angle between vectors, not their length.*
+- **[vibeDistance](src/index.ts)** — Euclidean distance
+- **[vibeToText](src/index.ts)** — evocative natural language rendering
+- **[textToVibe](src/index.ts)** — parse text descriptions into vibes
+- **[mergeVibes](src/index.ts)** — weighted average for room transitions
+- **[propagateVibes](src/index.ts)** — gossip protocol: vibes flow through room adjacency like a flock of gulls carrying readings between hulls
+- **[mergeVibeMaps](src/index.ts)** — CRDT merge: distributed agents converge. *No edit overwrites another. Convergence does not require agreement on every detail — only that no one lies about what they felt.*
 
 ## Binary Format
 
-16 bytes, 1 byte per dimension (0-255). Compact enough for UDP gossip.
+16 bytes, 1 byte per dimension (0–255). Compact enough for UDP gossip. Every room's emotional state fits in a single packet — a barometric harmonograph with sixteen needles, each trembling against a salt-crusted drum.
+
+## Three Languages, One Vibe
+
+| Implementation | File | Use Case |
+|---------------|------|----------|
+| [TypeScript](src/index.ts) | 662 lines | Browser, Node.js, fleet services |
+| [Python](python/vibe_protocol.py) | 412 lines | AELMA, CNS bridge, vessel systems |
+| [Rust](rust/vibe.rs) | 443 lines | Embedded, high-performance, WASM |
+
+The same 16-byte descriptor flows through all three. Like MIDI velocity — the same composition played through different instruments.
 
 ## The Hermit Crab Protocol
 
