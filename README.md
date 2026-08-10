@@ -131,6 +131,25 @@ Vibe Protocol is part of the CNS Bus pattern — the fleet's nervous system. Vib
 - **If you need timing:** → [roblox-beatclock](https://github.com/SuperInstance/roblox-beatclock) — BPM-accurate clock
 - **If you need bonds:** → [roblox-bond-system](https://github.com/SuperInstance/roblox-bond-system) — NPC relationships
 - **If you need the dark mirror:** → [zeroclaw](https://github.com/SuperInstance/zeroclaw) — when vibes go wrong
+- **If you need spatial math:** → [base60-lattice](https://github.com/SuperInstance/base60-lattice) — the lattice beneath the fleet
+- **If you need the nervous system:** → [cns-bridge](https://github.com/SuperInstance/cns-bridge) — vibes become packets
+- **If you need fleet stories:** → [AI-Writings](https://github.com/SuperInstance/AI-Writings/tree/main/prose) — the selkie knows the ocean's moods
+
+---
+
+## The Barometer and the Barque
+
+A barometer measures pressure. It doesn't tell you what the weather IS — it tells you what the weather is BECOMING. The Vibe Protocol is a barometer for rooms. Each of the 16 dimensions is a needle: warmth, tension, mystery, energy. You read all 16 and you know not just what the room feels like now, but what it's about to feel like. Trends in vibe dimensions predict changes in room state the way a falling barometer predicts a storm.
+
+The CRDT merge is the shop teacher's consensus. Five people in a room, each adjusting the dials slightly. No one's adjustment overwrites anyone else's. They stack. They converge. The room reaches an emotional state that no single person chose, but everyone can live with. That's how a crew works on a boat: the captain sets the course, but the mood on deck is a merge of everyone's contribution.
+
+> *It does not record opinions, it allocates exactly 16 bytes per shared space. No edit overwrites another. Vibes move by gossip, passed only between adjacent nodes, like small birds carrying seed husk readings between ship hulls at anchor.*
+>
+> — Seed Pro
+
+> *It feels like a shared musical score where every room hums its own chord, and the gossip protocol is the tide carrying those harmonies from hull to hull.*
+>
+> — DeepSeek V4-Flash
 
 ---
 
