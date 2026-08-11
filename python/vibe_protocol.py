@@ -7,11 +7,16 @@ Includes: compute, compare, distance, text rendering, merge, propagate, CRDT mer
 
 from __future__ import annotations
 
-from .vibe import (
-    Vibe, VIBE_DIMENSIONS, create_vibe, neutral_vibe, zero_vibe,
-)
+try:
+    from .vibe import (
+        Vibe, VIBE_DIMENSIONS, create_vibe, neutral_vibe, zero_vibe,
+    )
+except ImportError:
+    from vibe import (
+        Vibe, VIBE_DIMENSIONS, create_vibe, neutral_vibe, zero_vibe,
+    )
 from dataclasses import dataclass, field
-from typing import Dict, List, Optional, Tuple, Map as TypedMap
+from typing import Dict, List, Optional, Tuple
 import math
 import re
 
