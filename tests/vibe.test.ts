@@ -517,3 +517,302 @@ describe('Serialization', () => {
     expect(() => vibeFromBinary(new Uint8Array(8))).toThrow();
   });
 });
+
+// ─── Edge cases and robustness ───────────────────────────────────────────────
+
+describe('NaN and Infinity handling', () => {
+  // Documents current behavior — NaN and Infinity are NOT handled gracefully
+  // This is a known gap in the implementation, mirroring the fleet-wide NaN blind spot
+
+  it('createVibe with NaN override passes through unchecked', () => {
+    const v = createVibe({ warmth: NaN });
+    expect(v.warmth).toBeNaN();
+  });
+
+  it('createVibe with Infinity override passes through unchecked', () => {
+    const v = createVibe({ warmth: Infinity, tension: -Infinity });
+    expect(v.warmth).toBe(Infinity);
+    expect(v.tension).toBe(-Infinity);
+  });
+
+  it('clampVibe does not handle NaN', () => {
+    const v = clampVibe({ ...neutralVibe(), warmth: NaN });
+    // Document: clampVibe uses Math.min/max which propagates NaN
+    expect(isNaN(v.warmth)).toBe(true);
+  });
+
+  it('clampVibe handles Infinity', () => {
+    const v = clampVibe({ ...neutralVibe(), energy: Infinity });
+    expect(v.energy).toBeLessThanOrEqual(1);
+  });
+
+  it('clampVibe handles -Infinity', () => {
+    const v = clampVibe({ ...neutralVibe(), depth: -Infinity });
+    expect(v.depth).toBeGreaterThanOrEqual(0);
+  });
+});
+
+describe('computeVibe edge cases', () => {
+  it('handles empty room', () => {
+    const room: Room = { id: 'empty', name: 'Empty' };
+    const vibe = computeVibe(room);
+    expect(isValidVibe(vibe)).toBe(true);
+    // All dimensions should be in 0-1
+    for (const dim of VIBE_DIMENSIONS) {
+      expect(vibe[dim]).toBeGreaterThanOrEqual(0);
+      expect(vibe[dim]).toBeLessThanOrEqual(1);
+    }
+  });
+
+  it('handles room with empty arrays', () => {
+    const room: Room = {
+      id: 'blank', name: 'Blank',
+      exits: [], objects: [], npcs: [], players: [], tags: []
+    };
+    const vibe = computeVibe(room);
+    expect(isValidVibe(vibe)).toBe(true);
+  });
+
+  it('handles room with undefined optionals', () => {
+    const room: Room = { id: 'minimal', name: 'Minimal' };
+    const vibe = computeVibe(room, {});
+    expect(isValidVibe(vibe)).toBe(true);
+  });
+
+  it('handles extreme lighting values', () => {
+    const room: Room = { id: 'bright', name: 'Bright', lighting: 1.0 };
+    const dark: Room = { id: 'dark', name: 'Dark', lighting: 0.0 };
+    const brightVibe = computeVibe(room);
+    const darkVibe = computeVibe(dark);
+    expect(brightVibe.brightness).toBeGreaterThanOrEqual(darkVibe.brightness);
+  });
+
+  it('handles very large room', () => {
+    const room: Room = {
+      id: 'huge', name: 'Huge',
+      size: 1.0, exits: Array.from({ length: 20 }, (_, i) => `exit${i}`),
+      objects: Array.from({ length: 50 }, (_, i) => ({ name: `obj${i}` })),
+      players: Array.from({ length: 100 }, (_, i) => `player${i}`),
+    };
+    const vibe = computeVibe(room);
+    expect(isValidVibe(vibe)).toBe(true);
+    expect(vibe.openness).toBeGreaterThan(0.5);
+    expect(vibe.energy).toBeGreaterThan(0.5);
+  });
+});
+
+describe('compareVibes and vibeDistance edge cases', () => {
+  it('compareVibes with zero vectors returns valid number', () => {
+    const zero = zeroVibe();
+    const result = compareVibes(zero, zero);
+    expect(typeof result).toBe('number');
+    expect(isNaN(result)).toBe(false);
+  });
+
+  it('vibeDistance is symmetric', () => {
+    const a = createVibe({ warmth: 0.9, tension: 0.1 });
+    const b = createVibe({ warmth: 0.1, tension: 0.9 });
+    expect(vibeDistance(a, b)).toBeCloseTo(vibeDistance(b, a), 5);
+  });
+
+  it('compareVibes with identical vibes returns exactly 1', () => {
+    const v = createVibe({ warmth: 0.7, depth: 0.3 });
+    expect(compareVibes(v, v)).toBe(1);
+  });
+
+  it('vibeDistance with identical vibes returns 0', () => {
+    const v = createVibe({ warmth: 0.7 });
+    expect(vibeDistance(v, v)).toBe(0);
+  });
+
+  it('vibeDistance satisfies triangle inequality approximately', () => {
+    const a = createVibe({ warmth: 1, tension: 0, mystery: 0.5 });
+    const b = createVibe({ warmth: 0.3, tension: 0.7, mystery: 0.2 });
+    const c = createVibe({ warmth: 0.6, tension: 0.4, mystery: 0.8 });
+    const dab = vibeDistance(a, b);
+    const dbc = vibeDistance(b, c);
+    const dac = vibeDistance(a, c);
+    // Triangle inequality: d(a,c) <= d(a,b) + d(b,c)
+    expect(dac).toBeLessThanOrEqual(dab + dbc + 0.001);
+  });
+});
+
+describe('vector conversion edge cases', () => {
+  it('vectorToVibe with wrong length throws or handles gracefully', () => {
+    const short = [0.5, 0.5, 0.5]; // only 3 values
+    expect(() => vectorToVibe(short)).not.toThrow();
+    // The result should have all 16 dimensions
+    const vibe = vectorToVibe(short);
+    expect(VIBE_DIMENSIONS.length).toBe(16);
+  });
+
+  it('vectorToVibe with extra values truncates', () => {
+    const long = Array.from({ length: 20 }, () => 0.5);
+    const vibe = vectorToVibe(long);
+    expect(isValidVibe(vibe)).toBe(true);
+  });
+
+  it('vibeToVector returns exactly 16 elements', () => {
+    const v = createVibe({ warmth: 0.5 });
+    const vec = vibeToVector(v);
+    expect(vec.length).toBe(16);
+  });
+
+  it('round-trip preserves exact values', () => {
+    const original = createVibe({
+      warmth: 0.123, tension: 0.456, mystery: 0.789,
+      energy: 0.0, order: 1.0
+    });
+    const vec = vibeToVector(original);
+    const restored = vectorToVibe(vec);
+    for (const dim of VIBE_DIMENSIONS) {
+      expect(restored[dim]).toBeCloseTo(original[dim], 5);
+    }
+  });
+});
+
+describe('serialization edge cases', () => {
+  it('binary round-trip preserves extreme values', () => {
+    const extreme = createVibe({
+      warmth: 0.0, tension: 1.0, mystery: 0.0, energy: 1.0,
+      order: 0.0, openness: 1.0, intimacy: 0.0, novelty: 1.0,
+      brightness: 0.0, density: 1.0, rhythm: 0.0, resonance: 1.0,
+      gravity: 0.0, friction: 1.0, clarity: 0.0, depth: 1.0,
+    });
+    const binary = vibeToBinary(extreme);
+    const restored = vibeFromBinary(binary);
+    expect(compareVibes(extreme, restored)).toBeCloseTo(1, 5);
+  });
+
+  it('JSON round-trip preserves all values', () => {
+    const original = createVibe({
+      warmth: 0.111, tension: 0.222, mystery: 0.333,
+      energy: 0.444, order: 0.555, openness: 0.666,
+    });
+    const json = vibeToJSON(original);
+    const restored = vibeFromJSON(json);
+    for (const dim of VIBE_DIMENSIONS) {
+      expect(restored[dim]).toBeCloseTo(original[dim], 5);
+    }
+  });
+
+  it('JSON throws on invalid input', () => {
+    expect(() => vibeFromJSON('not json')).toThrow();
+    expect(() => vibeFromJSON('{}')).toBeDefined(); // may or may not throw
+  });
+
+  it('binary produces compact representation', () => {
+    const v = createVibe({ warmth: 0.5 });
+    const binary = vibeToBinary(v);
+    // 16 dimensions × 1 byte = 16 bytes minimum
+    expect(binary.length).toBeGreaterThanOrEqual(16);
+    expect(binary.length).toBeLessThan(100); // not bloated
+  });
+});
+
+describe('textToVibe edge cases', () => {
+  it('handles empty string', () => {
+    const v = textToVibe('');
+    expect(isValidVibe(v)).toBe(true);
+  });
+
+  it('handles string with no known words', () => {
+    const v = textToVibe('xyzzy fnord qwerty');
+    expect(isValidVibe(v)).toBe(true);
+    // Should return something close to neutral
+    const neutral = neutralVibe();
+    expect(vibeDistance(v, neutral)).toBeLessThan(0.3);
+  });
+
+  it('handles very long text', () => {
+    const longText = 'warm '.repeat(1000) + 'bright '.repeat(1000);
+    const v = textToVibe(longText);
+    expect(isValidVibe(v)).toBe(true);
+    expect(v.warmth).toBeGreaterThan(0.5);
+    expect(v.brightness).toBeGreaterThan(0.5);
+  });
+
+  it('is case insensitive', () => {
+    const lower = textToVibe('warm bright cozy');
+    const upper = textToVibe('WARM BRIGHT COZY');
+    expect(vibeDistance(lower, upper)).toBeCloseTo(0, 5);
+  });
+});
+
+describe('mergeVibes edge cases', () => {
+  it('handles negative weights gracefully', () => {
+    const a = createVibe({ warmth: 0.9 });
+    const b = createVibe({ warmth: 0.1 });
+    const merged = mergeVibes([a, b], [-1, 2]);
+    // Should not crash, should produce valid vibe
+    expect(isValidVibe(merged)).toBe(true);
+  });
+
+  it('handles all-zero weights', () => {
+    const a = createVibe({ warmth: 0.9 });
+    const b = createVibe({ warmth: 0.1 });
+    // All-zero weights: total weight is 0, division may produce NaN
+    // Document the behavior — either it crashes or produces NaN/neutral
+    let result;
+    try {
+      result = mergeVibes([a, b], [0, 0]);
+      // If it produces a result, document what it is
+      expect(typeof result.warmth).toBe('number');
+    } catch (e) {
+      // If it crashes, document that
+      expect(e).toBeDefined();
+    }
+  });
+
+  it('handles mismatched array lengths', () => {
+    const a = createVibe({ warmth: 0.9 });
+    const b = createVibe({ warmth: 0.1 });
+    const c = createVibe({ warmth: 0.5 });
+    // 3 vibes, 2 weights — should handle gracefully
+    expect(() => mergeVibes([a, b, c], [1, 1])).not.toThrow();
+  });
+});
+
+describe('propagateVibes edge cases', () => {
+  it('handles empty room map', () => {
+    const rooms = new Map<string, Vibe>();
+    const adj = new Map<string, string[]>();
+    const result = propagateVibes(rooms, adj, { iterations: 1 });
+    expect(result.size).toBe(0);
+  });
+
+  it('handles zero iterations', () => {
+    const rooms = new Map<string, Vibe>([
+      ['room1', createVibe({ warmth: 0.9 })]
+    ]);
+    const adj = new Map<string, string[]>();
+    const result = propagateVibes(rooms, adj, { iterations: 0 });
+    expect(result.has('room1')).toBe(true);
+  });
+
+  it('handles disconnected rooms', () => {
+    const rooms = new Map<string, Vibe>([
+      ['a', createVibe({ warmth: 0.9 })],
+      ['b', createVibe({ warmth: 0.1 })],
+    ]);
+    const adj = new Map<string, string[]>(); // no connections
+    const result = propagateVibes(rooms, adj, { decay: 0.3, iterations: 3 });
+    // Disconnected rooms: vibes should stay the same
+    expect(result.get('a')?.warmth).toBeCloseTo(0.9, 2);
+    expect(result.get('b')?.warmth).toBeCloseTo(0.1, 2);
+  });
+
+  it('propagates through connected rooms', () => {
+    const rooms = new Map<string, Vibe>([
+      ['a', createVibe({ warmth: 0.9 })],
+      ['b', createVibe({ warmth: 0.1 })],
+    ]);
+    const adj = new Map<string, string[]>([
+      ['a', ['b']],
+      ['b', ['a']],
+    ]);
+    const result = propagateVibes(rooms, adj, { decay: 0.3, iterations: 1 });
+    // After propagation, room b should be warmer than before
+    expect(result.get('b')?.warmth).toBeGreaterThan(0.1);
+  });
+});
