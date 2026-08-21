@@ -130,7 +130,7 @@ Vibe Protocol is part of the CNS Bus pattern — the fleet's nervous system. Vib
 - **If you need the boat:** → [vessel-agent-system](https://github.com/SuperInstance/vessel-agent-system) — AELMA
 - **If you need timing:** → [roblox-beatclock](https://github.com/SuperInstance/roblox-beatclock) — BPM-accurate clock
 - **If you need bonds:** → [roblox-bond-system](https://github.com/SuperInstance/roblox-bond-system) — NPC relationships
-- **If you need the dark mirror:** → [zeroclaw](https://github.com/SuperInstance/zeroclaw) — when vibes go wrong
+- **If you need the dark mirror:** → [zeroclaw](https://github.com/SuperInstance/zeroclaw-dissertation) — when vibes go wrong
 - **If you need spatial math:** → [base60-lattice](https://github.com/SuperInstance/base60-lattice) — the lattice beneath the fleet
 - **If you need the nervous system:** → [cns-bridge](https://github.com/SuperInstance/cns-bridge) — vibes become packets
 - **If you need fleet stories:** → [AI-Writings](https://github.com/SuperInstance/AI-Writings/tree/main/prose) — the selkie knows the ocean's moods
